@@ -13,5 +13,5 @@ Caveats:
 Todo:
  * Implement ASCII
  
-# How to run
+### How to run
 Simplest way to run:
