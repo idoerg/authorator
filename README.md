@@ -84,7 +84,7 @@ authors name in footnote size, and the affiliations in italics. The
 footer file can override that.
 
 ### Todo:
- * Implement ASCII outout
+ * Implement ASCII output
  * Different name formats for writing: right now it's first name first
    only. Would like to enable last name first, initials, etc.
  
