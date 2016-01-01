@@ -76,10 +76,10 @@ Write lots of smart stuff here.
 ### Advanced
 Many options can be changed. Run `./authorator -h` for details.
 
-* Header file: default none. If you could like some standard preaamble, you can create a file containing its text.
+* Header file: default none. If you would like some standard preamble, you can create a file containing its text.
   `authorator --headerfile` to input it.
 * Footer file: default none. Adds text after the author and affiliations
-  list. Right now there is some defualt text in the code that makes the
+  list. Right now there is some default text in the code that makes the
 authors name in footnote size, and the affiliations in italics. The
 footer file can override that.
 
@@ -87,4 +87,5 @@ footer file can override that.
  * Implement ASCII output
  * Different name formats for writing: right now it's first name first
    only. Would like to enable last name first, initials, etc.
+ * Use ORCID ID as input, and use the ORCID API to get the author information
  
