@@ -30,13 +30,14 @@ as long as all four fields are there.
 ### How to run
 Simplest way to run:
 
-./authorator -i authors.csv -o authors.tex
+`./authorator -i authors.csv -o authors.tex`
 
 This will create a tex file
 
 ### How to put the authors list in your LaTeX document
 
 Your Document should look something line this:
+```
 \begin{docuemnt}
 .
 .
@@ -47,5 +48,4 @@ Your Document should look something line this:
 .
 .
 \maketitle
-
-The 
+```
