@@ -13,5 +13,39 @@ Caveats:
 Todo:
  * Implement ASCII
  
+### authors csv file
+
+The input file to authorator is a tab-delimited csv file. It should have
+four columns: First Name, Middle Name, Last Name, Affiliations.
+* First Name, Middle Name, Last Name: author's names. One author per
+  line
+* Affiliations: the author's affiliations (see example_authors.csv for
+  examples). If an author has more than one affiliations, those are 
+  separated by a ";".
+* Title line: the first line of the authrs csv file should be a title
+  line, with the field names. The order of the fields is not important,
+as long as all four fields are there.
+
+
 ### How to run
 Simplest way to run:
+
+./authorator -i authors.csv -o authors.tex
+
+This will create a tex file
+
+### How to put the authors list in your LaTeX document
+
+Your Document should look something line this:
+\begin{docuemnt}
+.
+.
+\usepackage{authblk}
+.
+.
+\input{authors}
+.
+.
+\maketitle
+
+The 
