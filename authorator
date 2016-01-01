@@ -18,8 +18,9 @@ def header_stuff(latex_path,header_file):
         header_file.close()
     latex_out.close()
 
-def affils_and_authors(csv_path,delimiter='\t',affildelim=';',affiliation="Affiliation",
-        firstname="First Name",middlename="Middle Name",lastname="Last Name"):
+#def affils_and_authors(csv_path,delimiter='\t',affildelim=';',affiliation="Affiliation",
+#        firstname="First Name",middlename="Middle Name",lastname="Last Name"):
+def affils_and_authors(csv_path,delimiter='\t',affildelim=';'):
     affil_num = 0
     current_affil_num = 0
     author_num = 0
@@ -27,8 +28,8 @@ def affils_and_authors(csv_path,delimiter='\t',affildelim=';',affiliation="Affil
     author_affil = defaultdict(list)
     author_list = []
     with open(csv_path) as author_file:
-        auth_reader = csv.DictReader(author_file, delimiter=delimiter,
-                )
+        auth_reader = csv.DictReader(author_file, delimiter=delimiter)
+        firstname, middlename, lastname, affiliation = auth_reader.fieldnames
         for author in auth_reader:
             author_list.append(author)
             # split affiliations, if necessary
@@ -47,10 +48,12 @@ def affils_and_authors(csv_path,delimiter='\t',affildelim=';',affiliation="Affil
     # sort affiliation keys if an author has more than one
     for author_key in author_affil:
         author_affil[author_key].sort() 
-    return author_list, affil_dict, author_affil
+    return author_list, affil_dict, author_affil, firstname, middlename, lastname
 
-def print_authors_affils(author_list,author_affil, affil_dict,latex_path,utf8=True,
-        firstname="First Name",middlename="Middle Name",lastname="Last Name"):
+def print_authors_affils(author_list,author_affil, affil_dict,latex_path,
+                         firstname,middlename,lastname,
+                         utf8=True):
+
     latex_out = open(latex_path,"a")
     affil_list = []
     for author in author_list:
@@ -104,9 +107,9 @@ def make_cli_parser():
     parser = argparse.ArgumentParser(prog="authorator")  
     parser.add_argument('-i','--infile', required=True, help='csv file containing authors and affiliations')
     parser.add_argument('-o','--outfile',required=True, help='LaTeX output file')
-    parser.add_argument('--firstname',default='First Name', help='Title of First Name column')
-    parser.add_argument('--lastname',default='Last Name', help='Title of Last Name column')
-    parser.add_argument('--middlename',default='Middle Name', help='Title of Middle Name column')
+#    parser.add_argument('--firstname',default='First Name', help='Title of First Name column')
+#    parser.add_argument('--lastname',default='Last Name', help='Title of Last Name column')
+#    parser.add_argument('--middlename',default='Middle Name', help='Title of Middle Name column')
     parser.add_argument('--affiliation',default='Affiliation', help='Title of Affiliation column')
     parser.add_argument('--delim','-d',default='\t', help='csv field delimiter. Default <tab>')
     parser.add_argument('--affildelim','-a',default=';', help='affiliations delimiter. Default ";"')
@@ -126,19 +129,16 @@ if __name__ == '__main__':
     parser = make_cli_parser()
     cli = parser.parse_args()
     header_stuff(cli.outfile,header_file=cli.headerfile)
-    author_list, affil_dict, author_affil = affils_and_authors(cli.infile,
+    author_list, affil_dict, author_affil,firstname, middlename,lastname = affils_and_authors(cli.infile,
                                            delimiter=cli.delim,
-                                           affildelim=cli.affildelim,
-                                           firstname=cli.firstname,
-                                           middlename=cli.middlename,
-                                           lastname=cli.lastname)
+                                           affildelim=cli.affildelim)
 
     print_authors_affils(author_list, author_affil, 
                   affil_dict, cli.outfile,
                   utf8=booldict[cli.utf8.upper()],
-                  firstname=cli.firstname,
-                  middlename=cli.middlename,
-                  lastname=cli.lastname)
+                  firstname=firstname,
+                  middlename=middlename,
+                  lastname=lastname)
     footer_stuff(cli.outfile,cli.footerfile,cli.defaultfoot)
             
 
