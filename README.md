@@ -1,7 +1,7 @@
 ## authorator
 
-A Python program to create a LaTeX file with a large number of authors and  affiliations. This is useful for managing
-manuscripts with a large number of authors (in LaTeX).
+A Python program to create a LaTeX file with a large number of authors
+and  affiliations. 
 
 Authorator inputs a csv file with the authors and their affiliations, and outputs a LaTeX file that can be imported
 into the document via \input, or simply cut-and-pasted into your main manuscript file.
