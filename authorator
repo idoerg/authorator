@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+
+import csv
+import sys
+import os
+import argparse
+from collections import defaultdict
+
+
+def header_stuff(latex_path,header_file):
+    if os.path.isfile(latex_path):
+        raise FileExistsError("%s already exists. Choose another name or remove this file" % latex_path)
+    latex_out = open(latex_path,"w")
+    if header_file:
+        header_text = open(header_file,'r').read()
+        latex_out.write(header_text)
+        latex_out.write('\n')
+        header_file.close()
+    latex_out.close()
+
+def affils_and_authors(csv_path,delimiter='\t',affildelim=';',affiliation="Affiliation",
+        firstname="First Name",middlename="Middle Name",lastname="Last Name"):
+    affil_num = 0
+    current_affil_num = 0
+    author_num = 0
+    affil_dict = {}
+    author_affil = defaultdict(list)
+    author_list = []
+    with open(csv_path) as author_file:
+        auth_reader = csv.DictReader(author_file, delimiter=delimiter,
+                )
+        for author in auth_reader:
+            author_list.append(author)
+            # split affiliations, if necessary
+            affil_list = [i.strip() for i in author[affiliation].split(affildelim)]
+            for affil in affil_list:
+                author_key = ((author[firstname],
+                               author[middlename],
+                               author[lastname]))
+                if affil in affil_dict:
+                    current_affil_num = affil_dict[affil]
+                else:
+                    affil_num += 1
+                    current_affil_num = affil_num
+                    affil_dict[affil] = affil_num
+                author_affil[author_key].append(current_affil_num)
+    # sort affiliation keys if an author has more than one
+    for author_key in author_affil:
+        author_affil[author_key].sort() 
+    return author_list, affil_dict, author_affil
+
+def print_authors_affils(author_list,author_affil, affil_dict,latex_path,utf8=True,
+        firstname="First Name",middlename="Middle Name",lastname="Last Name"):
+    latex_out = open(latex_path,"a")
+    affil_list = []
+    for author in author_list:
+        author_key = ((author[firstname],
+                       author[middlename],
+                       author[lastname]))
+        affil_nums = author_affil[author_key]
+        latex_out.write("\\author[")
+        if len(affil_nums) > 1:
+            for i in affil_nums[:-1]:
+                latex_out.write("%d," % i)
+        latex_out.write("%d]" % affil_nums[-1])
+        latex_out.write("{%s %s %s}\n" % author_key)
+
+    for affil in affil_dict: 
+        affil_list.append( (affil_dict[affil],affil) )
+    affil_list.sort()
+    for affil_num, affil in affil_list:
+        latex_out.write("\\affil[%d]" % affil_num)
+        latex_out.write("{%s}\n" % escape_chars(affil))
+
+    latex_out.close()
+
+def escape_chars(inline):
+    # & % $ # _ { }
+    escape_chars = {'&': '\&', 
+            '%': '\%', 
+            '$': '\$', 
+            '#': '\#', 
+            '_': '\_', 
+            '{': '\{', 
+            '}': '\}',
+            '~': '\\textasciitilde',
+            '^': '\\textasciicircum'}
+    for c in escape_chars:
+        inline = inline.replace(c,escape_chars[c])
+    return inline
+
+def footer_stuff(latex_path,footer_path,default_foot):
+    latex_out = open(latex_path,"a")
+    if footer_path:
+        footer_text = open(footer_path,'r').read()
+        latex_out.write(footer_text)
+    elif default_foot:
+        latex_out.write("\\setcounter{Maxaffil}{0}\n")
+        latex_out.write("\\renewcommand\Authfont{\small}\n")
+        latex_out.write("\\renewcommand\Affilfont{\itshape\\footnotesize}\n")
+    latex_out.close()
+
+def make_cli_parser():
+    parser = argparse.ArgumentParser(prog="authorator")  
+    parser.add_argument('-i','--infile', required=True, help='csv file containing authors and affiliations')
+    parser.add_argument('-o','--outfile',required=True, help='LaTeX output file')
+    parser.add_argument('--firstname',default='First Name', help='Title of First Name column')
+    parser.add_argument('--lastname',default='Last Name', help='Title of Last Name column')
+    parser.add_argument('--middlename',default='Middle Name', help='Title of Middle Name column')
+    parser.add_argument('--affiliation',default='Affiliation', help='Title of Affiliation column')
+    parser.add_argument('--delim','-d',default='\t', help='csv field delimiter. Default <tab>')
+    parser.add_argument('--affildelim','-a',default=';', help='affiliations delimiter. Default ";"')
+    parser.add_argument('--headerfile', default=None,help="file with header text")
+    parser.add_argument('--footerfile', default=None,help="file with footer text")
+    parser.defaultfoot = True
+    parser.add_argument('--no-defaultfoot', dest='defaultfoot', action='store_false',
+                                             help="Don't use default footer text")
+
+    # Don't change the following. Did not implement yet.
+    parser.add_argument('--utf8','-u',default='T',choices=['T','t','F','f'], 
+                         help="output in UTF8(default). ASCII output not implemented yet.")
+    return parser
+
+if __name__ == '__main__':
+    booldict = {'F': False,'T':True}
+    parser = make_cli_parser()
+    cli = parser.parse_args()
+    header_stuff(cli.outfile,header_file=cli.headerfile)
+    author_list, affil_dict, author_affil = affils_and_authors(cli.infile,
+                                           delimiter=cli.delim,
+                                           affildelim=cli.affildelim,
+                                           firstname=cli.firstname,
+                                           middlename=cli.middlename,
+                                           lastname=cli.lastname)
+
+    print_authors_affils(author_list, author_affil, 
+                  affil_dict, cli.outfile,
+                  utf8=booldict[cli.utf8.upper()],
+                  firstname=cli.firstname,
+                  middlename=cli.middlename,
+                  lastname=cli.lastname)
+    footer_stuff(cli.outfile,cli.footerfile,cli.defaultfoot)
+            
+
+
