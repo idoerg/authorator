@@ -3,7 +3,7 @@
 ##########################################################################
 #
 # Written by Iddo Friedberg
-# idoerg@gmail.com
+# Copyright (C) 2016 Iddo Friedberg idoerg@gmail.com
 #
 #  This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -136,13 +136,26 @@ def make_cli_parser():
     parser.defaultfoot = True
     parser.add_argument('--no-defaultfoot', dest='defaultfoot', action='store_false',
                                              help="Don't use default footer text")
+#    parser.add_argument('--license', help="GPL v3.0 license")
 
     # Don't change the following. Did not implement yet.
     parser.add_argument('--utf8','-u',default='T',choices=['T','t','F','f'], 
                          help="output in UTF8(default). ASCII output not implemented yet.")
     return parser
 
+def license():
+    print()
+    print("AUTHORATOR  Copyright (C) 2016  Iddo Friedberg")
+    print("This program comes with ABSOLUTELY NO WARRANTY.")
+    print("This is free software, and you are welcome to redistribute it")
+    print("under certain conditions")
+    print("See details in the License copy provided with this software or at")
+    print("http://www.gnu.org/licenses/gpl-3.0.en.html")
+    print()
+    print()
+
 if __name__ == '__main__':
+    license()
     booldict = {'F': False,'T':True}
     parser = make_cli_parser()
     cli = parser.parse_args()
