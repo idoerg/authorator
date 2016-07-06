@@ -26,8 +26,8 @@ from collections import defaultdict
 
 
 def header_stuff(latex_path,header_file):
-    if os.path.isfile(latex_path):
-        raise FileExistsError("%s already exists. Choose another name or remove this file" % latex_path)
+#    if os.path.isfile(latex_path):
+#        raise FileExistsError("%s already exists. Choose another name or remove this file" % latex_path)
     latex_out = open(latex_path,"w")
     if header_file:
         header_text = open(header_file,'r').read()
@@ -95,6 +95,40 @@ def print_authors_affils(author_list,author_affil, affil_dict,latex_path,
 
     latex_out.close()
 
+def print_authors_affils_simple(author_list,author_affil, affil_dict,latex_path,
+                         firstname,middlename,lastname,
+                         utf8=True):
+
+    latex_out = open(latex_path,"a")
+    affil_list = []
+    n = 0
+    for author in author_list:
+        n += 1
+        author_key = ((author[firstname],
+                       author[middlename],
+                       author[lastname]))
+        affil_nums = author_affil[author_key]
+        latex_out.write("{%s %s %s}" % author_key)
+        latex_out.write("\\textsuperscript{")
+        if len(affil_nums) > 1:
+            for i in affil_nums[:-1]:
+                latex_out.write("%d," % i)
+        if n == len(author_list): # last author
+            latex_out.write("%d}\n" % affil_nums[-1])
+        else:
+            latex_out.write("%d},\n" % affil_nums[-1])
+    latex_out.write('\n\n')
+    for affil in affil_dict: 
+        affil_list.append( (affil_dict[affil],affil) )
+    affil_list.sort()
+    n = 0
+    for affil_num, affil in affil_list:
+        n += 1
+        latex_out.write("\\textsuperscript{%d}" % affil_num)
+#        if n < len(affil_list): # not last affiliation yet
+        latex_out.write("{%s}\\\\ \n" % escape_chars(affil))
+
+    latex_out.close()
 def escape_chars(inline):
     # & % $ # _ { }
     escape_chars = {'&': '\&', 
@@ -134,6 +168,8 @@ def make_cli_parser():
     parser.add_argument('--headerfile', default=None,help="file with header text")
     parser.add_argument('--footerfile', default=None,help="file with footer text")
     parser.defaultfoot = True
+    parser.add_argument('--simple', '-s', action="store_true",  
+                        help="simple mode: do not use authblk")
     parser.add_argument('--no-defaultfoot', dest='defaultfoot', action='store_false',
                                              help="Don't use default footer text")
 #    parser.add_argument('--license', help="GPL v3.0 license")
@@ -163,14 +199,21 @@ if __name__ == '__main__':
     author_list, affil_dict, author_affil,firstname, middlename,lastname = affils_and_authors(cli.infile,
                                            delimiter=cli.delim,
                                            affildelim=cli.affildelim)
-
-    print_authors_affils(author_list, author_affil, 
+    if cli.simple:
+        print_authors_affils_simple(author_list, author_affil, 
                   affil_dict, cli.outfile,
                   utf8=booldict[cli.utf8.upper()],
                   firstname=firstname,
                   middlename=middlename,
                   lastname=lastname)
-    footer_stuff(cli.outfile,cli.footerfile,cli.defaultfoot)
+    else:
+        print_authors_affils(author_list, author_affil, 
+                  affil_dict, cli.outfile,
+                  utf8=booldict[cli.utf8.upper()],
+                  firstname=firstname,
+                  middlename=middlename,
+                  lastname=lastname)
+        footer_stuff(cli.outfile,cli.footerfile,cli.defaultfoot)
             
 
 
