@@ -41,7 +41,8 @@ Simplest way to run:
 
 This will create a tex file with the authors affiliations. See `example_authors.tex` for the result of the input of
 `example_authors.csv`. Note that you need to [`\usepackage{authblk}`](https://www.ctan.org/pkg/authblk) in your LaTeX
-document to make this work.
+document to make this work. NEW: you can now run in Simple Mode
+(--simple) where you can do without authblk. See below for details.
 
 ### How to put the authors list in your LaTeX document
 
@@ -82,6 +83,13 @@ Many options can be changed. Run `./authorator -h` for details.
   list. Right now there is some default text in the code that makes the
 authors name in footnote size, and the affiliations in italics. The
 footer file can override that.
+
+* --simple/-s Simple mode: does not require the `\usepackage{authblk}`.
+  The output can be imported or cut/pasted into any place in your
+manuscript, instead of depending on the title. This is espacially useful
+for non-standard journal templates. See file
+`example_authors_simple.tex` for example output.
+
 
 ### Todo:
  * Implement ASCII output
