@@ -88,7 +88,7 @@ footer file can override that.
   The output can be imported or cut/pasted into any place in your
 manuscript, instead of depending on the title. This is espacially useful
 for non-standard journal templates. See file
-`example_authors_simple.tex` for example output.
+`[example_authors_simple.tex](https://github.com/idoerg/authorator/blob/master/example_authors_simple.tex)` for example output.
 
 
 ### Todo:
